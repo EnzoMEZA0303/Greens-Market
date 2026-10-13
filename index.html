@@ -628,14 +628,14 @@ const P = [
  ["lechuga-americana","Lechuga americana","hojas",["und"],"iceberg"],
  ["lechuga-lolo","Lechuga lolo rosa","hojas",["und"],""],
  ["hoja-platano","Hoja de plátano","hojas",["kg"],"hojas de platano"],
- ["hierbabuena","Hierbabuena","hierbas",["g","kg","rollo"],"yerba buena menta"],
- ["albahaca","Albahaca","hierbas",["g","kg"],"deshojada"],
+ ["hierbabuena","Hierbabuena","hierbas",["rollo","g","kg"],"yerba buena menta"],
+ ["albahaca","Albahaca","hierbas",["g","kg","rollo"],"deshojada"],
  ["perejil-italiano","Perejil italiano","hierbas",["g","kg"],""],
  ["perejil","Perejil","hierbas",["und","kg"],"perejil crespo"],
  ["culantro-castilla","Culantro castilla","hierbas",["rollo"],"cilantro cualantro"],
  ["culantro-coyote","Culantro coyote","hierbas",["rollo"],"cualantro"],
  ["cebollino","Cebollino","hierbas",["rollo"],""],
- ["romero","Romero","hierbas",["g","kg","rollo"],""],
+ ["romero","Romero","hierbas",["rollo","g","kg"],""],
  ["eneldo","Eneldo","hierbas",["g"],"dill"],
  ["estragon","Estragón","hierbas",["rollo"],""],
  ["zacate-limon","Zacate de limón","hierbas",["rollo"],"lemongrass"],
@@ -1157,6 +1157,7 @@ REGLAS:
 - Usa el nombre EXACTO del catálogo cuando el producto coincida aunque esté mal escrito o con sinónimo: ochuva/uchua→Uchuva, blueberry→Arándano, gengibre→Jengibre, yerba buena→Hierbabuena, microgrins→Microgreens mixtos, zuquini→Zucchini, mangas→Mango, limones mandarinos→Limón mandarina, limos lima→Limón lima, cherrys→Tomate cherry, cualantro→Culantro. Cuando solo dice "chile dulce"→Chile dulce rojo; solo "culantro"→Culantro castilla; solo "hongos"→Hongo blanco; solo "lechuga"→Lechuga americana; "tamarindo"→Tamarindo 500 g (o Tamarindo 1 kg si pide de kilo).
 - Unidades válidas: kg, g, und, bandeja, rollo, bolsa. "kilo(s)"/"k"→kg, "gramos"/"gr"→g, "cajita(s)"/"caja(s)"→bandeja, "paquete(s)"→bolsa, "medio kilo"→0.5 kg.
 - Si no indica unidad, usa la primera unidad del catálogo para ese producto.
+- Productos que se venden en rollo (culantro, cebollino, hierbabuena, romero, espárragos, etc.): si no indica unidad o dice unidades, usa "rollo". Cada rollo es una unidad y la cantidad es la que pide el cliente.
 - Si el producto no está en el catálogo, deja el nombre como lo escribió el cliente, en mayúscula inicial.
 - Pon en "note" pedidos especiales como "maduros", "deshojada", "que esté buena". Si una cantidad es ambigua, ponlo en "note".
 - No inventes productos ni cantidades.
@@ -1169,7 +1170,7 @@ ${txt}`;
   const list = (res && Array.isArray(res.pedidos)) ? res.pedidos : [];
   return list.map(p=>({
     negocio:String(p.negocio||"").trim(), area:String(p.area||"").trim(), pide:"", fecha:fallbackDate, fuente:"claude",
-    items:(Array.isArray(p.items)?p.items:[]).map(i=>({n:String(i.n||"").trim(),q:Number(i.q)||0,u:VALID_U.includes(i.u)?i.u:"und",note:String(i.note||"").trim()})).filter(i=>i.n&&i.q>0)
+    items:(Array.isArray(p.items)?p.items:[]).map(i=>({n:String(i.n||"").trim(),q:Number(i.q)||0,u:VALID_U.includes(i.u)?i.u:"und",note:String(i.note||"").trim()})).filter(i=>i.n&&i.q>0).map(i=>{ const pr=BYNAME[norm(i.n)]; if(pr&&pr.u.includes("rollo")&&!pr.u.includes(i.u)) i.u="rollo"; return i; })
   })).filter(o=>o.items.length);
 }
 
@@ -1249,7 +1250,7 @@ function parseItemLine(line){
   const nt=norm(line); const name=id?BY[id].n:"";
   const notes=NOTE_WORDS.filter(([k])=>nt.includes(k) && !norm(name).includes(k.split(" ")[0])).map(x=>x[1]);
   const uniqNotes=[...new Set(notes)].filter((n,i,a)=>!(n==="maduros"&&a.includes("bien maduros")));
-  if(id){ const p=BY[id]; let uu=u||(p.u.includes("und")?"und":p.u[0]); if(!p.u.includes(uu)){ if(uu==="paquete"&&p.u.includes("bolsa")) uu="bolsa"; else if(uu==="bolsa"&&p.u.includes("paquete")) uu="paquete"; } return {n:p.n,q,u:uu,note:uniqNotes.join(", ")}; }
+  if(id){ const p=BY[id]; let uu=u||(p.u.includes("rollo")?"rollo":p.u.includes("und")?"und":p.u[0]); if(uu==="und"&&!p.u.includes("und")&&p.u.includes("rollo")) uu="rollo"; if(!p.u.includes(uu)){ if(uu==="paquete"&&p.u.includes("bolsa")) uu="bolsa"; else if(uu==="bolsa"&&p.u.includes("paquete")) uu="paquete"; } return {n:p.n,q,u:uu,note:uniqNotes.join(", ")}; }
   const raw=t.replace(/^\s*(de|del)\s+/,"").trim();
   return {n:raw.charAt(0).toUpperCase()+raw.slice(1),q,u:u||"und",note:uniqNotes.join(", "),unknown:true};
 }
