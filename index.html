@@ -539,6 +539,8 @@ const P = [
  ["uva-verde-500","Uva verde 500 g","frutas",["bandeja"],"uvas uva verde media bandeja"],
  ["uva-morada","Uva morada 1 kg","frutas",["bandeja"],"uvas uva morada roja bandeja kilo"],
  ["uva-morada-500","Uva morada 500 g","frutas",["bandeja"],"uvas uva morada roja media bandeja"],
+ ["tamarindo-500","Tamarindo 500 g","frutas",["und"],"tamarindo bola medio kilo"],
+ ["tamarindo-1kg","Tamarindo 1 kg","frutas",["und"],"tamarindo kilo"],
  ["kiwi","Kiwi","frutas",["und"],""],
  ["coco","Coco","frutas",["und"],""],
  ["manzana-gala","Manzana gala","frutas",["und","paquete"],"gala"],
@@ -810,7 +812,8 @@ function refresh(){ try{ aplicarDueno(); }catch(e){}
 Object.entries(UNITS).forEach(([k,v])=>{ const o=document.createElement("option"); o.value=k; o.textContent=v.pl||v.l; $("#xUnit").appendChild(o); });
 $("#xUnit").value="und";
 // Si el cliente escribe un producto que ya está en la lista (ej. "Huevo cartón de 30und"), se usa el de la lista
-const FRASES=[[/\bnaranjas?\s+internacional(es)?\b/g,"naranja importada"],[/\bbrotes?\b(?!\s+de\b)/g,"microgreens mixtos"],[/\bmangas?\b/g,"mango"],[/\belotes?\b/g,"maiz dulce"]];
+const FRASES=[[/\bnaranjas?\s+internacional(es)?\b/g,"naranja importada"],[/\bbrotes?\b(?!\s+de\b)/g,"microgreens mixtos"],[/\bmangas?\b/g,"mango"],[/\belotes?\b/g,"maiz dulce"],
+  [/^\s*chiles?(\s+dulces?)?\s*$/,"chile dulce rojo"],[/^\s*(culantros?|cilantros?|cualantros?)\s*$/,"culantro castilla"],[/^\s*(hongos?|champi[nñ]on(es)?)\s*$/,"hongo blanco"],[/^\s*lechugas?\s*$/,"lechuga americana"]];
 const frases=s=>{ let t=norm(s); FRASES.forEach(([r,v])=>{ t=t.replace(r,v); }); return t; };
 function buscarEnLista(n){
   const NO=new Set(["und","unidad","unidade","kg","kilo","g","gr","gramo","x"]);
@@ -1150,7 +1153,7 @@ ${cat}
 
 REGLAS:
 - Cada encabezado como "Pedido coyol bar" o "Pedido panadería #2" inicia un pedido distinto. "negocio" es el nombre del cliente (ej. "Coyol", "Panadería #2", "ESH") y "area" el área si aparece (Bar, Cocina, Panadería).
-- Usa el nombre EXACTO del catálogo cuando el producto coincida aunque esté mal escrito o con sinónimo: ochuva/uchua→Uchuva, blueberry→Arándano, gengibre→Jengibre, yerba buena→Hierbabuena, microgrins→Microgreens mixtos, zuquini→Zucchini, mangas→Mango, limones mandarinos→Limón mandarina, limos lima→Limón lima, cherrys→Tomate cherry, cualantro→Culantro.
+- Usa el nombre EXACTO del catálogo cuando el producto coincida aunque esté mal escrito o con sinónimo: ochuva/uchua→Uchuva, blueberry→Arándano, gengibre→Jengibre, yerba buena→Hierbabuena, microgrins→Microgreens mixtos, zuquini→Zucchini, mangas→Mango, limones mandarinos→Limón mandarina, limos lima→Limón lima, cherrys→Tomate cherry, cualantro→Culantro. Cuando solo dice "chile dulce"→Chile dulce rojo; solo "culantro"→Culantro castilla; solo "hongos"→Hongo blanco; solo "lechuga"→Lechuga americana; "tamarindo"→Tamarindo 500 g (o Tamarindo 1 kg si pide de kilo).
 - Unidades válidas: kg, g, und, bandeja, rollo, bolsa. "kilo(s)"/"k"→kg, "gramos"/"gr"→g, "cajita(s)"/"caja(s)"→bandeja, "paquete(s)"→bolsa, "medio kilo"→0.5 kg.
 - Si no indica unidad, usa la primera unidad del catálogo para ese producto.
 - Si el producto no está en el catálogo, deja el nombre como lo escribió el cliente, en mayúscula inicial.
@@ -1197,10 +1200,11 @@ const SYN = {gengibre:"jengibre",jengibr:"jengibre",ochuva:"uchuva",uchua:"uchuv
   rabanos:"rabano",lechugas:"lechuga",eneldo:"eneldo",yuca:"yuca",gr:"g"};
 // cuando solo se dice la palabra principal
 const HEAD = {tomat:"tomate",papa:"papa",hongo:"hongo-blanco",naranja:"naranja-nacional",flor:"flores",microgreen:"microgreens-mixto",fresa:"fresa-400",
-  chilote:"mini-chilote",vainica:"vainica",maiz:"maiz",mora:"mora",chile:"chile-mixto",perejil:"perejil-italiano",albahaca:"albahaca",arugula:"arugula",
+  chilote:"mini-chilote",vainica:"vainica",maiz:"maiz",mora:"mora",chile:"chile-rojo",perejil:"perejil-italiano",albahaca:"albahaca",arugula:"arugula",
   zanahoria:"zanahoria",escalopin:"mini-escalopin",repollo:"repollo-verde",camote:"camote",mandarina:"mandarina",pepino:"pepino",kale:"kale",
   jalapeno:"jalapeno",esparrago:"esparrago",cebollino:"cebollino",romero:"romero",coliflor:"coliflor",brocoli:"brocoli",apio:"apio",cereza:"cereza",
-  berenjena:"berenjena",aguacat:"aguacate",cebolla:"cebolla-blanca",cherry:"tomate-cherry",coyot:"culantro-coyote",coyote:"culantro-coyote",castilla:"culantro-castilla",aji:"aji-peruano",uva:"uva-verde",limon:"limon-mandarina",brote:"microgreens-mixto"};
+  berenjena:"berenjena",aguacat:"aguacate",cebolla:"cebolla-blanca",cherry:"tomate-cherry",coyot:"culantro-coyote",coyote:"culantro-coyote",castilla:"culantro-castilla",aji:"aji-peruano",uva:"uva-verde",limon:"limon-mandarina",brote:"microgreens-mixto",
+  culantro:"culantro-castilla",cilantro:"culantro-castilla",lechuga:"lechuga-americana",tamarindo:"tamarindo-500"};
 for(const k of Object.keys(HEAD)){ const sk=stem(k); if(sk!==k&&!HEAD[sk]){ HEAD[sk]=HEAD[k]; } }
 const NOTE_WORDS = [["que este buena","que esté buena"],["no verdes","no verdes"],["bien maduro","bien maduros"],["maduro","maduros"],["madura","maduras"],["deshojada","deshojada"],["pequena","pequeñas"]];
 const words = s => s.split(/[^a-z0-9ñ]+/).filter(Boolean);
