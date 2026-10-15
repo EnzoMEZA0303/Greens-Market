@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#517A37">
+<title>Alistar pedido · Greens Market</title>
+<link rel="icon" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F4F6EE; --surface:#FFFFFF; --sunk:#E8EDE0; --line:#D7DECB;
+  --ink:#132018; --muted:#5B6B60; --leaf:#517A37; --leaf-ink:#FFFFFF; --leaf-soft:#E8F0DA;
+  --citrus:#B1C135; --citrus-ink:#1F2A07; --warn:#C2610C; --warn-soft:#FBEBDD;
+  --display:"Bricolage Grotesque",system-ui,sans-serif; --body:"Figtree",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0E1511; --surface:#16201A; --sunk:#1D2921; --line:#2A382F;
+  --ink:#E8F0EA; --muted:#93A399; --leaf:#A8BE38; --leaf-ink:#172006; --leaf-soft:#25331A;
+  --warn:#F0A060; --warn-soft:#3A2A1A; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.35;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+.wrap{max-width:640px;margin:0 auto;padding:0 14px calc(120px + env(safe-area-inset-bottom,0px))}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + env(safe-area-inset-top,0px)) 0 8px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand img{height:40px;width:auto;display:block}
+.brand .dk{display:none}
+@media (prefers-color-scheme:dark){.brand .lt{display:none}.brand .dk{display:block}}
+.brand .when{text-align:right;font-size:.82rem;color:var(--muted);line-height:1.25}
+.brand .when b{display:block;color:var(--leaf);font-size:.98rem}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--sunk);border-radius:12px;padding:3px;margin-top:10px}
+.seg button{border:0;background:transparent;border-radius:10px;padding:9px;font-weight:700;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.85rem;font-weight:600;color:var(--muted);white-space:nowrap}
+.chips button.done{background:var(--leaf);border-color:var(--leaf);color:var(--leaf-ink)}
+.help{margin:14px 2px 4px;color:var(--muted);font-size:.9rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-top:14px;overflow:hidden;scroll-margin-top:150px}
+.card h2{font-family:var(--display);font-weight:800;font-size:1.3rem;margin:0;padding:14px 14px 10px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:1px solid var(--line)}
+.card h2 small{font-family:var(--body);font-size:.85rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.card.full h2 small{color:var(--leaf)}
+.row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line);min-height:62px}
+.row:first-of-type{border-top:0}
+.row.ok{background:var(--leaf-soft)}
+.row.no{background:var(--warn-soft)}
+.chk{flex:none;width:40px;height:40px;border-radius:10px;border:2px solid var(--muted);background:var(--surface);display:grid;place-items:center;padding:0}
+.chk svg{width:24px;height:24px;opacity:0}
+.row.ok .chk{background:var(--leaf);border-color:var(--leaf)}
+.row.ok .chk svg{opacity:1;color:var(--leaf-ink)}
+.txt{flex:1;min-width:0}
+.txt b{font-weight:600;display:block}
+.txt i{display:block;font-size:.82rem;color:var(--muted)}
+.row.no .txt b{text-decoration:line-through;color:var(--warn)}
+.ent{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.ent label{display:flex;align-items:center;gap:4px;font-size:.78rem;font-weight:700;color:var(--muted)}
+.ent input{width:78px;height:40px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);text-align:center;font-weight:700;font-size:1.05rem;padding:0 4px}
+.ent input.kg{border-color:var(--leaf)}
+.ent input.falta{border-color:var(--warn);background:var(--warn-soft)}
+.nohay{border:1px solid var(--line);background:transparent;border-radius:8px;padding:3px 8px;font-size:.74rem;font-weight:700;color:var(--muted)}
+.row.no .nohay{background:var(--warn);border-color:var(--warn);color:#fff}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 75%,transparent)}
+.bar .in{max-width:640px;margin:0 auto}
+.prog{height:6px;background:var(--sunk);border-radius:999px;overflow:hidden;margin-bottom:8px}
+.prog i{display:block;height:100%;width:0;background:var(--leaf);transition:width .2s}
+.send{width:100%;border:0;border-radius:14px;background:var(--leaf);color:var(--leaf-ink);padding:16px;font-weight:800;font-size:1.05rem;display:flex;justify-content:space-between;align-items:center}
+.send span{background:var(--citrus);color:var(--citrus-ink);border-radius:999px;padding:2px 10px;font-size:.9rem}
+.msg{text-align:center;padding:60px 20px;color:var(--muted)}
+.msg h1{font-family:var(--display);color:var(--ink);font-size:1.5rem}
+.scrim{position:fixed;inset:0;z-index:20;background:rgba(8,14,10,.5);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:640px;border-radius:20px 20px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow:auto}
+.sheet h2{font-family:var(--display);margin:0 0 8px;font-size:1.3rem}
+.sheet p{margin:0 0 10px;color:var(--muted)}
+.sheet ul{margin:0 0 14px;padding-left:20px;color:var(--warn);font-weight:600;font-size:.92rem}
+.sheet .btns{display:grid;gap:8px;position:sticky;bottom:calc(-18px - env(safe-area-inset-bottom,0px));background:var(--surface);padding:10px 0 4px}
+.sheet .btns button{border:0;border-radius:12px;padding:14px;font-weight:800}
+.b1{background:var(--leaf);color:var(--leaf-ink)}
+.b2{background:var(--sunk);color:var(--ink)}
+:focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="msg"><h1>Cargando pedido…</h1></div></div>
+<script>
+"use strict";
+const FORM = "https://tally.so/r/Dq2Blj";
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+async function unpack(s){
+  const z = s[0]; let b = s.slice(1).replace(/-/g,"+").replace(/_/g,"/"); while (b.length % 4) b += "=";
+  const bytes = Uint8Array.from(atob(b), c => c.charCodeAt(0)); let out = bytes;
+  if (z === "z") out = new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
+  return JSON.parse(new TextDecoder().decode(out));
+}
+async function pack(obj){
+  const raw = new TextEncoder().encode(JSON.stringify(obj)); let bytes = raw, z = "j";
+  try { if (window.CompressionStream) { bytes = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer()); z = "z"; } } catch (e) { bytes = raw; z = "j"; }
+  let bin = ""; bytes.forEach(x => bin += String.fromCharCode(x));
+  return z + btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function hash(s){ let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+
+let D = null, S = {ok:{}, m:{}, tot:{}}, KEY = "", view = "cli";
+const load = () => { try { const x = JSON.parse(localStorage.getItem(KEY) || "null"); if (x) S = Object.assign({ok:{}, m:{}, tot:{}}, x); } catch (e) {} };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const full = (c, it) => c.k + "#" + it[3];
+const num = v => { const n = parseFloat(String(v).replace(",", ".")); return isFinite(n) && n >= 0 ? Math.round(n * 1000) / 1000 : null; };
+
+function counts(){
+  let all = 0, ok = 0;
+  D.c.forEach(c => c.i.forEach(it => { all++; const k = full(c, it); if (S.ok[k] || S.m[k] === 0) ok++; }));
+  return {all, ok};
+}
+function updateBar(){
+  const {all, ok} = counts();
+  $("#prog").style.width = (all ? ok / all * 100 : 0) + "%";
+  $("#cnt").textContent = ok + "/" + all;
+  D.c.forEach((c, ci) => {
+    const n = c.i.filter(it => { const k = full(c, it); return S.ok[k] || S.m[k] === 0; }).length;
+    const h = document.getElementById("h" + ci); if (h) { h.textContent = n + "/" + c.i.length; h.closest(".card").classList.toggle("full", n === c.i.length); }
+    const ch = document.getElementById("ch" + ci); if (ch) ch.classList.toggle("done", n === c.i.length);
+  });
+}
+function rowState(el, k){
+  const no = S.m[k] === 0;
+  el.classList.toggle("ok", !!S.ok[k] && !no);
+  el.classList.toggle("no", no);
+}
+function render(){
+  const app = $("#app");
+  const cliHTML = D.c.map((c, ci) => `
+    <section class="card" id="c${ci}"><h2>${esc(c.n)} <small id="h${ci}"></small></h2>
+    ${c.i.map((it, ii) => { const k = full(c, it); const v = S.m[k]; return `
+      <div class="row" data-k="${esc(k)}">
+        <button class="chk" aria-label="Listo: ${esc(it[0])}">${CHECK}</button>
+        <div class="txt"><b>${esc(it[0])}</b>${it[1] ? `<i>${esc(it[1])}</i>` : ""}</div>
+        <div class="ent">
+          <label>${it[2] ? "kg" : "envió"} <input class="${it[2] ? "kg" : ""}" inputmode="decimal" enterkeyhint="next" placeholder="${it[2] ? "peso" : "—"}" value="${v != null && v !== 0 ? esc(String(v).replace(".", ",")) : ""}" aria-label="${it[2] ? "Peso en kg" : "Cantidad enviada"}: ${esc(it[0])}"></label>
+          <button class="nohay">No hay</button>
+        </div>
+      </div>`; }).join("")}
+    </section>`).join("");
+  const totHTML = `<section class="card"><h2>Pedido total <small>${D.t.length} productos</small></h2>
+    ${D.t.map((t, ti) => `<div class="row tot ${S.tot[ti] ? "ok" : ""}" data-t="${ti}"><button class="chk" aria-label="Listo: ${esc(t)}">${CHECK}</button><div class="txt"><b>${esc(t)}</b></div></div>`).join("")}</section>`;
+  app.innerHTML = `
+    <header class="top">
+      <div class="brand"><img class="lt" src="logo.png" alt="Greens Market"><img class="dk" src="logo-dark.png" alt="Greens Market">
+        <div class="when"><b>${esc(D.d.charAt(0).toUpperCase()+D.d.slice(1))}</b>${D.c.length} clientes</div></div>
+      <div class="seg" role="tablist"><button id="tCli" aria-selected="${view === "cli"}">Por cliente</button><button id="tTot" aria-selected="${view === "tot"}">Pedido total</button></div>
+      ${view === "cli" ? `<nav class="chips">${D.c.map((c, ci) => `<button id="ch${ci}" data-go="c${ci}">${esc(c.n)}</button>`).join("")}</nav>` : ""}
+    </header>
+    ${view === "cli" ? `<p class="help">Marque <b>✓</b> cada producto al alistarlo. En los cuadros verdes anote el <b>peso real en kg</b>. Si mandó otra cantidad, anótela en “envió”. Si no hay, toque <b>No hay</b>.</p>${cliHTML}` : `<p class="help">Lista para ir sacando la mercadería. Los pesos se anotan en “Por cliente”.</p>${totHTML}`}
+    <div class="bar"><div class="in"><div class="prog"><i id="prog"></i></div>
+      <button class="send" id="send">Enviar a Greens Market <span id="cnt"></span></button></div></div>`;
+  app.querySelectorAll(".row[data-k]").forEach(el => rowState(el, el.dataset.k));
+  updateBar();
+}
+document.addEventListener("click", e => {
+  const t = e.target;
+  if (t.closest("#tCli")) { view = "cli"; render(); return; }
+  if (t.closest("#tTot")) { view = "tot"; render(); window.scrollTo(0, 0); return; }
+  const go = t.closest("[data-go]"); if (go) { document.getElementById(go.dataset.go).scrollIntoView({behavior:"smooth"}); return; }
+  if (t.closest("#send")) { review(); return; }
+  const tr = t.closest(".row.tot"); if (tr && t.closest(".chk, .txt")) { const i = tr.dataset.t; S.tot[i] = !S.tot[i]; tr.classList.toggle("ok", !!S.tot[i]); save(); return; }
+  const row = t.closest(".row[data-k]"); if (!row) return; const k = row.dataset.k;
+  if (t.closest(".nohay")) {
+    if (S.m[k] === 0) { delete S.m[k]; } else { S.m[k] = 0; S.ok[k] = true; row.querySelector("input").value = ""; }
+    rowState(row, k); save(); updateBar(); return;
+  }
+  if (t.closest(".chk") || t.closest(".txt")) {
+    if (S.m[k] === 0) delete S.m[k];
+    S.ok[k] = !S.ok[k]; rowState(row, k); save(); updateBar();
+  }
+});
+document.addEventListener("input", e => {
+  const inp = e.target; const row = inp.closest(".row[data-k]"); if (!row) return; const k = row.dataset.k;
+  const v = num(inp.value); inp.classList.remove("falta");
+  if (inp.value.trim() === "" || v == null) { if (S.m[k] !== 0) delete S.m[k]; }
+  else { S.m[k] = v; if (v > 0) S.ok[k] = true; else S.ok[k] = true; }
+  rowState(row, k); save(); updateBar();
+});
+function close(){ const s = $(".scrim"); if (s) s.remove(); }
+function review(){
+  const sinPeso = [], sinMarcar = [];
+  D.c.forEach(c => c.i.forEach(it => { const k = full(c, it); const v = S.m[k];
+    if (it[2] && v == null) sinPeso.push(c.n + ": " + it[0]);
+    else if (!S.ok[k] && v == null) sinMarcar.push(c.n + ": " + it[0]); }));
+  const sc = document.createElement("div"); sc.className = "scrim";
+  sc.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+    <h2>${sinPeso.length || sinMarcar.length ? "Revise antes de enviar" : "Todo listo"}</h2>
+    ${sinPeso.length ? `<p>Falta el peso de:</p><ul>${sinPeso.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    ${sinMarcar.length ? `<p>Sin marcar (${sinMarcar.length}):</p><ul>${sinMarcar.slice(0, 8).map(x => `<li>${esc(x)}</li>`).join("")}${sinMarcar.length > 8 ? `<li>y ${sinMarcar.length - 8} más…</li>` : ""}</ul>` : ""}
+    ${!sinPeso.length && !sinMarcar.length ? `<p>Todos los productos están marcados y con su peso.</p>` : ""}
+    <div class="btns"><button class="b1" id="go">Enviar a Greens Market</button><button class="b2" id="back">Seguir alistando</button></div></div>`;
+  document.body.appendChild(sc);
+  sc.addEventListener("click", ev => { if (ev.target === sc || ev.target.id === "back") close(); });
+  $("#go").onclick = send;
+}
+async function send(){
+  const b = $("#go"); b.disabled = true; b.textContent = "Enviando…";
+  const {all, ok} = counts();
+  const m = {}; Object.entries(S.m).forEach(([k, v]) => { if (v != null) m[k] = v; });
+  const okK = Object.keys(S.ok).filter(k => S.ok[k]);
+  const pesos = Object.values(m).filter(v => v > 0).length, nohay = Object.values(m).filter(v => v === 0).length;
+  const resumen = `Alistado para ${D.d}: ${ok} de ${all} productos listos · ${pesos} pesos/cantidades anotados · ${nohay} sin producto`;
+  const datos = await pack({f: D.f, m, ok: okK, n: all, at: new Date().toISOString()});
+  const url = FORM + "?" + new URLSearchParams({fecha: D.f, resumen, datos}).toString();
+  S.enviado = new Date().toISOString(); save();
+  location.href = url;
+}
+(async () => {
+  const h = location.hash.slice(1);
+  try { if (!h) throw 0; D = await unpack(h); if (!D || !D.c) throw 0; }
+  catch (e) { $("#app").innerHTML = `<div class="msg"><img src="logo.png" alt="Greens Market" style="height:48px"><h1>Este enlace no está completo</h1><p>Pida a Greens Market que le envíe el enlace del pedido otra vez (6366 9195).</p></div>`; return; }
+  KEY = "gm-prov-" + D.f + "-" + hash(h); load(); render();
+})();
+</script>
+</body>
+</html>
